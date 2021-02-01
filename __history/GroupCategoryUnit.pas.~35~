@@ -1,0 +1,375 @@
+unit GroupCategoryUnit;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  MusFlatButton, Vcl.Menus;
+
+type
+//-----------------------------------------------------------------------------
+//	プレイリスト表示用
+//-----------------------------------------------------------------------------
+  TCategoryPanel	= class( TPanel )
+  private
+	FTitle		: string;
+    FIndex	    : integer;
+
+    procedure   DiapCategory;
+    procedure   SetTitle( ttl : string );
+    procedure   SetIndex( inx : integer );
+
+  protected
+  	procedure 	Paint; override;
+
+  public
+	property	Title   : string	    read FTitle		write SetTitle;
+	property	IndexNo	: integer	    read FIndex	    write SetIndex;
+
+  end;
+
+
+
+type
+  TGroupCategoryForm = class(TForm)
+    MusFlatButton2: TMusFlatButton;
+    SelectComboBox: TComboBox;
+    RadioButton1: TRadioButton;
+    RadioButton2: TRadioButton;
+    NoPanel: TPanel;
+    NamePanel: TPanel;
+    DispPanel: TPanel;
+    CatePanel: TPanel;
+    IndexPopupMenu: TPopupMenu;
+    N11: TMenuItem;
+    N12: TMenuItem;
+    N31: TMenuItem;
+    N41: TMenuItem;
+    N42: TMenuItem;
+    N51: TMenuItem;
+    N61: TMenuItem;
+    N81: TMenuItem;
+    N91: TMenuItem;
+    N101: TMenuItem;
+    InputEdit: TEdit;
+    procedure FormCreate(Sender: TObject);
+    procedure CatePanelMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure InputEditKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure InputEditEnter(Sender: TObject);
+    procedure InputEditExit(Sender: TObject);
+    procedure N11Click(Sender: TObject);
+  private
+    { Private 宣言 }
+
+    FCatePanel      : array [0..9] of TCategoryPanel;
+
+    procedure   MakeCategoryPanel;
+
+  public
+    { Public 宣言 }
+  end;
+
+var
+  GroupCategoryForm: TGroupCategoryForm;
+
+implementation
+
+{$R *.dfm}
+
+uses MainUnit;
+
+const
+    TOP_COLOR   = $00c47244;
+    ODD_COLOR   = $EAD5CF;
+    EVEN_COLOR  = $F5EBE9;
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupCategoryForm.CatePanelMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+   cate : integer;
+   po : TPoint;
+
+begin
+
+    cate := TPanel( Sender ).Tag;
+
+    if mbLeft = Button then begin
+        // 名称
+
+        // 名称入力ボックス表示
+        InputEdit.Parent    := FCatePanel[ cate ];
+        InputEdit.Top       := 0;
+        InputEdit.Left      := 50;
+        InputEdit.Width     := NamePanel.Width;
+        InputEdit.Text      := FCatePanel[ cate ].Title;
+        InputEdit.Tag       := cate;
+        InputEdit.Visible   := True;
+
+        InputEdit.SetFocus;
+    end
+    else begin
+        // 表示順
+
+        IndexPopupMenu.Tag  := cate;
+
+        // ポップアップメニュ表示
+        po := TPanel( Sender ).ClientToScreen( Point( x, y ) );
+        IndexPopupMenu.Popup( po.X, po.Y );
+    end;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupCategoryForm.FormCreate(Sender: TObject);
+begin
+
+    InputEdit.Visible   := False;
+
+    NoPanel.Caption     := ' ' + NoPanel.Caption;
+    NoPanel.Color       := TOP_COLOR;
+
+    NamePanel.Caption   := ' ' + NamePanel.Caption;
+    NamePanel.Color     := TOP_COLOR;
+
+    DispPanel.Caption   := ' ' + DispPanel.Caption;
+    DispPanel.Color     := TOP_COLOR;
+
+    MakeCategoryPanel;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupCategoryForm.MakeCategoryPanel;
+var
+    i : integer;
+
+begin
+
+    for i:=0 to HIGH( FCatePanel ) do begin
+
+        FCatePanel[i]   := TCategoryPanel.Create( Self );
+        FCatePanel[i].Parent       := Self;
+
+        FCatePanel[i].Tag       := i;
+
+        FCatePanel[i].Left      := CatePanel.Left;
+        FCatePanel[i].Height    := CatePanel.Height;
+        FCatePanel[i].Width     := CatePanel.Width;
+        FCatePanel[i].Top       := CatePanel.Top + (CatePanel.Height + 1) * i;
+        FCatePanel[i].Caption   := '';
+        FCatePanel[i].BevelOuter    := CatePanel.BevelOuter;
+        FCatePanel[i].Font      := CatePanel.Font;
+        FCatePanel[i].Visible   := True;
+
+        FCatePanel[i].OnMouseDown   := CatePanelMouseDown;
+
+        FCatePanel[i].ParentBackground  := False;
+        if ((i mod 2) = 0) then FCatePanel[i].Color := ODD_COLOR
+        else FCatePanel[i].Color                    := EVEN_COLOR;
+    end;
+end;
+
+//-----------------------------------------------------------------------------
+//  表示順ポップアップメニュ
+//-----------------------------------------------------------------------------
+procedure TGroupCategoryForm.N11Click(Sender: TObject);
+begin
+    FCatePanel[ IndexPopupMenu.Tag ].IndexNo   := TMenuItem( Sender ).Tag;
+
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupCategoryForm.InputEditEnter(Sender: TObject);
+begin
+    ;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupCategoryForm.InputEditExit(Sender: TObject);
+begin
+    InputEdit.Parent    := nil;
+    InputEdit.Visible   := False;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupCategoryForm.InputEditKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+
+	case Key of
+    VK_RETURN:
+        begin
+        	//	ENTERが押された
+
+            // 確定
+            FCatePanel[ InputEdit.Tag ].Title   := InputEdit.Text;
+
+            InputEdit.Parent    := nil;
+            InputEdit.Visible   := False;
+        end;
+
+    VK_ESCAPE:
+        begin
+        	// ESCAPEが押された
+
+            InputEdit.Parent    := nil;
+            InputEdit.Visible   := False;
+        end;
+    end;
+
+end;
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	カスタムパネル関連
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure CenterTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	w, h, l, t : integer;
+
+begin
+    w := can.TextWidth( str );	l := ((rct.Right-rct.Left) - w) div 2;
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, rct.Left + l, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+
+    can.TextOut( rct.Left + l, rct.Top + t, str );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure LeftTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	h, t : integer;
+
+begin
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, rct.Left, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+
+    can.TextOut( rct.Left, rct.Top + t, str );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure RightTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	w, l, h, t : integer;
+
+begin
+    w := can.TextWidth( str );	l := rct.Right-w;
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, {rct.Left}l, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+//	SetBKMode( can.Handle, TRANSPARENT );
+    can.TextOut( l, rct.Top + t, str );
+end;
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TCategoryPanel.SetTitle( ttl : string );
+begin
+	FTitle := ttl;
+    Invalidate;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TCategoryPanel.SetIndex( inx : integer );
+begin
+	FIndex := inx;
+    Invalidate;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TCategoryPanel.Paint;
+begin
+    DiapCategory;
+end;
+
+//-----------------------------------------------------------------------------
+//	プレイリスト表示
+//-----------------------------------------------------------------------------
+procedure TCategoryPanel.DiapCategory;
+var
+	col : TColor;
+
+begin
+    if Caption <> '' then
+		Caption  := '';
+
+    // 下地
+{
+    // グラデーション使用
+    if True = MainForm.ConfigData.GradColor then begin
+		col := PerColor( Color, 50 );
+    	GradientFillCanvas( Canvas,
+				col,
+        		Color,
+            	RECT(0, 0, Width, Height), gdVertical );
+    end;
+}
+
+    Canvas.Brush.Color	:= Color;
+	Canvas.FrameRect( Rect( 0, 0, Width, Height ) );
+
+    // No.
+    Canvas.Font.Name    := 'Arial Rounded MT Bold';
+    Canvas.Font.Size	:= 9;
+//    Canvas.Font.Style	:= [fsBold];
+    Canvas.Font.Style	:= [];
+    Canvas.Font.Color	:= clBlack;
+    CenterTextRect( Canvas, Rect( 0, 0, 50, Height ), IntToStr( Tag+1 ) );
+
+    // 名称
+    Canvas.Font.Name    := 'メイリオ';
+    Canvas.Font.Size	:= 9;
+    Canvas.Font.Style	:= [fsBold];
+    Canvas.Font.Style	:= [];
+    Canvas.Font.Color	:= clBlack;
+
+    LeftTextRect( Canvas, Rect( 50, 0, 50+200, Height ), FTitle );
+
+    // 表示順
+//    Canvas.Font.Name    := 'メイリオ';
+//    Canvas.Font.Size	:= 9;
+//    Canvas.Font.Style	:= [fsBold];
+//    Canvas.Font.Style	:= [];
+//    Canvas.Font.Color	:= clBlack;
+
+    CenterTextRect( Canvas, Rect( 250, 0, 250+80, Height ), IntToStr( FIndex ), True );
+
+end;
+
+end.

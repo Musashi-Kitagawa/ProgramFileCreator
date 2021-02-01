@@ -1,0 +1,222 @@
+object ListForm: TListForm
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'ListForm'
+  ClientHeight = 529
+  ClientWidth = 933
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 8
+    Top = 325
+    Width = 44
+    Height = 17
+    Caption = #34920#31034#24418#24335
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 8
+    Top = 397
+    Width = 55
+    Height = 17
+    Caption = #12459#12521#12512#34920#31034
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object NamePanel: TPanel
+    Left = 8
+    Top = 64
+    Width = 100
+    Height = 16
+    BevelOuter = bvNone
+    Caption = #31471#23376#30058#21495
+    Color = 14511872
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = [fsBold]
+    ParentBackground = False
+    ParentFont = False
+    TabOrder = 0
+    Visible = False
+  end
+  object RadioButton1: TRadioButton
+    Left = 24
+    Top = 25
+    Width = 113
+    Height = 17
+    Caption = 'Destination'
+    TabOrder = 1
+  end
+  object RadioButton2: TRadioButton
+    Left = 128
+    Top = 25
+    Width = 113
+    Height = 17
+    Caption = 'Source'
+    TabOrder = 2
+  end
+  object LPanel: TPanel
+    Left = 8
+    Top = 81
+    Width = 906
+    Height = 30
+    BevelOuter = bvNone
+    Color = clGray
+    ParentBackground = False
+    TabOrder = 3
+    object CheckBoxTemp: TCheckBox
+      Left = 336
+      Top = 6
+      Width = 97
+      Height = 17
+      Caption = 'CheckBoxTemp'
+      TabOrder = 0
+    end
+    object RadioButtonTemp: TRadioButton
+      Left = 216
+      Top = 6
+      Width = 113
+      Height = 17
+      Caption = 'RadioButtonTemp'
+      TabOrder = 1
+    end
+  end
+  object Panel11: TPanel
+    Left = 24
+    Top = 489
+    Width = 664
+    Height = 32
+    BevelOuter = bvNone
+    Color = clGray
+    ParentBackground = False
+    TabOrder = 4
+  end
+  object SelectComboBox: TComboBox
+    Left = 8
+    Top = 344
+    Width = 209
+    Height = 26
+    Style = csDropDownList
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ItemIndex = 0
+    ParentFont = False
+    TabOrder = 5
+    Text = #30058#32068#12524#12452#12450#12454#12488#32232#38598
+    Items.Strings = (
+      #30058#32068#12524#12452#12450#12454#12488#32232#38598
+      #12497#12493#12523#35373#23450)
+  end
+  object ComboBox1: TComboBox
+    Left = 232
+    Top = 344
+    Width = 209
+    Height = 26
+    Style = csDropDownList
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ItemIndex = 0
+    ParentFont = False
+    TabOrder = 6
+    Text = #30058#32068#12524#12452#12450#12454#12488#32232#38598
+    Items.Strings = (
+      #30058#32068#12524#12452#12450#12454#12488#32232#38598
+      #12497#12493#12523#35373#23450)
+  end
+  object CheckBox1: TCheckBox
+    Left = 8
+    Top = 424
+    Width = 108
+    Height = 17
+    Caption = #21306#20999#12426#25991#23383
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 7
+  end
+  object CheckBox2: TCheckBox
+    Left = 122
+    Top = 424
+    Width = 108
+    Height = 17
+    Caption = 'ID'#21517#31216#25991#23383#25968
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 8
+  end
+  object CheckBox3: TCheckBox
+    Left = 243
+    Top = 424
+    Width = 108
+    Height = 17
+    Caption = 'NAME'#36865#20449#23550#35937
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 9
+  end
+  object CheckBox4: TCheckBox
+    Left = 355
+    Top = 424
+    Width = 108
+    Height = 17
+    Caption = 'XPT'#36865#20449#23550#35937
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 10
+  end
+  object CheckBox5: TCheckBox
+    Left = 483
+    Top = 424
+    Width = 108
+    Height = 17
+    Caption = 'XPT'#21306#20999#12426
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 11
+  end
+end

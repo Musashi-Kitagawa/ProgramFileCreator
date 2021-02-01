@@ -1,0 +1,663 @@
+unit GroupUnit;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  Vcl.Samples.Spin,
+//
+    ScreenDbUnit;
+
+type
+//-----------------------------------------------------------------------------
+//	プレイリスト表示用
+//-----------------------------------------------------------------------------
+  TterminalPanel	= class( TPanel )
+  private
+	FTermNo		: integer;
+	FIDName 	: string;
+	FMaterial 	: string;
+    FGrpCheck   : array [0..9] of TCheckBox;
+
+    procedure   DispGroup;
+    procedure   SetTermNo( no : integer );
+//    procedure   SetIndex( inx : integer );
+
+  protected
+  	procedure 	Paint; override;
+
+  public
+
+	property	TermNo   : integer	    read FTermNo		write SetTermNo;
+	property	IDName 	: string        read FIDName 	    write SetIDName;
+//	property	IndexNo	: integer	    read FIndex	    write SetIndex;
+
+  end;
+
+
+type
+  TGroupForm = class(TForm)
+    GScrollBox: TScrollBox;
+    NoPanel: TPanel;
+    IDPanel: TPanel;
+    MatPanel: TPanel;
+    GPanel: TPanel;
+    TerPanel: TPanel;
+    CategoryComboBox: TComboBox;
+    DestRadioButton: TRadioButton;
+    RadioButton2: TRadioButton;
+    GRPPanel: TPanel;
+    InputEdit: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    CheckBoxTemp: TCheckBox;
+    GroupComboBox: TComboBox;
+    PageSpinEdit: TSpinEdit;
+    procedure FormCreate(Sender: TObject);
+    procedure GPanelMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure InputEditEnter(Sender: TObject);
+    procedure InputEditExit(Sender: TObject);
+    procedure InputEditKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure TerPanelMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure GScrollBoxMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure PageSpinEditChange(Sender: TObject);
+    procedure GroupComboBoxChange(Sender: TObject);
+    procedure DestRadioButtonClick(Sender: TObject);
+    procedure CategoryComboBoxChange(Sender: TObject);
+  private
+    { Private 宣言 }
+
+    FGroupPanel     : array [0..9] of TPanel;
+    FTermPanel      : array [0..49] of TTerminalPanel;
+
+    FCurrentGroup       : integer;
+    FCurrentCategory    : integer;
+
+    procedure   MakeComponent;
+    procedure   MakeCategoryCombo;
+    procedure   MakeGroupCombo;
+    function    GetDestSource : integer;
+
+
+  public
+    { Public 宣言 }
+
+    procedure DispXPTGroup( opt : integer );
+
+  end;
+
+var
+  GroupForm: TGroupForm;
+
+implementation
+
+{$R *.dfm}
+
+uses
+    MainUnit;
+
+const
+    TOP_COLOR   = $00c47244;
+    ODD_COLOR   = $EAD5CF;
+    EVEN_COLOR  = $F5EBE9;
+
+var
+    FBM : array [0..1] of TBitmap;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.MakeCategoryCombo;
+var
+    cate : TLayoutButton;
+    grp : TLayoutData;
+    btn : TLayoutButton;
+    i : integer;
+
+begin
+    CategoryComboBox.Items.Clear;
+    for i:=0 to MainForm.FLayoutData[ TMainForm.typXPT ].List.Count-1 do begin
+        btn := MainForm.FLayoutData[ TMainForm.typXPT ].List.Data[i];
+        CategoryComboBox.Items.Add( TUiScreenSelectButton( btn.Button ).F_Text );
+    end;
+
+    CategoryComboBox.ItemIndex := FCurrentCategory;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+function TGroupForm.GetDestSource : integer;
+begin
+    if True = DestRadioButton.Checked then  Result := 0
+    else                                    Result := 1;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.MakeGroupCombo;
+var
+    i, ds : integer;
+    btn : TLayoutButton;
+    cate : TLayoutButton;
+    grp : TLayoutData;
+
+begin
+    GroupComboBox.Items.Clear;
+
+    cate := MainForm.FLayoutData[ TMainForm.typXPT ].List.Data[ FCurrentCategory ];
+
+    ds := GetDestSource;
+
+    grp := cate.Child[ ds ];
+    btn := grp.List.Data[ FCurrentGroup ];
+
+    for i:=0 to grp.List.Count-1 do begin
+
+        btn := grp.List.Data[ i ];
+//        btn := MainForm.FLayoutData[ TMainForm.typXPT ].List.Data[i];
+
+        GroupComboBox.Items.Add( TUiScreenSelectButton( btn.Button ).F_Text );
+    end;
+
+    GroupComboBox.ItemIndex := FCurrentGroup;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.CategoryComboBoxChange(Sender: TObject);
+begin
+    FCurrentCategory    := CategoryComboBox.ItemIndex;
+    FCurrentGroup       := 0;
+
+    DispXPTGroup( 0 );
+end;
+
+procedure TGroupForm.DestRadioButtonClick(Sender: TObject);
+begin
+    DispXPTGroup( 0 );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.DispXPTGroup( opt : integer );
+var
+    pg, pgmin, pgmax, p, i, j, ds : integer;
+    lay : TLayoutData;
+//    glst, blst : TLayoutList;
+    d : TUiDstButton;
+    s : TUiSrcButton;
+
+    cate : TLayoutButton;
+    grp : TLayoutData;
+    btn : TLayoutButton;
+
+    lst : TPgDestinationList;
+    dst : TPgDestinationData;
+
+begin
+
+    pg      := PageSpinEdit.Value - 1;
+    pgmin   := pg * 50 + 1;
+    pgmax   := pgmin + 50 - 1;
+
+    for i:=0 to HIGH( FTermPanel ) do begin
+        FTermPanel[i].TermNo := (pg * 50 + 1) + i;
+
+        for j:=0 to 10-1 do begin
+            FTermPanel[i].FGrpCheck[j].Checked  := False;
+        end;
+    end;
+
+
+    if opt = 0 then begin
+        MakeCategoryCombo;
+        MakeGroupCombo;
+    end;
+
+
+    for i:=0 to 10-1 do begin
+        FGroupPanel[i].Caption  := '';
+    end;
+
+    // １個目のカテゴリボタン
+    cate := MainForm.FLayoutData[ TMainForm.typXPT ].List.Data[ FCurrentCategory ];
+
+    ds := GetDestSource;
+
+    // グループのリスト
+    grp := cate.Child[ ds ];
+
+    for i:=0 to grp.List.Count-1 do begin
+
+        btn := grp.List.Data[i];
+        if btn = nil then break;
+
+        FGroupPanel[i].Caption  := TUiScreenSelectButton( btn.Button ).F_Text;
+
+        lay := btn.FChild[ ds ];
+
+        if lay = nil then continue;
+
+        for j:=0 to lay.list.count-1 do begin
+
+//            d := TUiDstButton( lay.List.Data[j] );
+
+            case ds of
+            0:
+                begin
+                    d := TUiDstButton( lay.List.Data[j].Button );
+                    p := StrToInt( d.F_DstPortNo );
+                end;
+
+            1:
+                begin
+                    s := TUiSrcButton( lay.List.Data[j].Button );
+                    p := StrToInt( s.F_SrcPortNo );
+                end;
+            end;
+
+            if (pgmin <= p) and (p <= pgmax) then begin
+
+                FTermPanel[ p - ((pg * 50) + 1) ].FGrpCheck[i].Checked := True;
+
+            end;
+
+        end;
+
+    end;
+
+    lst := MainForm.ProgramList.DestinationList;
+
+    for i:=0 to 50-1 do begin
+
+        dst := lst.Data[ (pg * 50) + i ];
+
+        if dst = nil then break;
+
+        FTermPanel[i].ti.Caption  := TUiScreenSelectButton( btn.Button ).F_Text;
+
+
+    end;
+
+end;
+
+procedure TGroupForm.GroupComboBoxChange(Sender: TObject);
+begin
+
+    FCurrentGroup   := GroupComboBox.ItemIndex;
+
+    DispXPTGroup( 0 );
+
+end;
+
+procedure TGroupForm.PageSpinEditChange(Sender: TObject);
+begin
+    DispXPTGroup( 1 );
+
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.FormCreate(Sender: TObject);
+begin
+
+    InputEdit.Visible   := False;
+
+//    NoPanel.Caption     := ' ' + NoPanel.Caption;
+    NoPanel.Color       := TOP_COLOR;
+
+//    IDPanel.Caption     := ' ' + NamePanel.Caption;
+    IDPanel.Color       := TOP_COLOR;
+
+//    MatPanel.Caption    := ' ' + DispPanel.Caption;
+    MatPanel.Color      := TOP_COLOR;
+    GRPPanel.Color      := TOP_COLOR;
+
+    MakeComponent;
+
+    FCurrentGroup       := 0;
+
+
+    // 新規番組　話数
+{
+    FBM[0] := TBitmap.Create;
+    FBM[0].LoadFromFile( MainForm.AppResDir + 'down2.bmp' );
+    PageSpinEdit.Button.DownGlyph  := FBM[0];
+    FBM[1] := TBitmap.Create;
+    FBM[1].LoadFromFile( MainForm.AppResDir + 'up2.bmp' );
+    PageSpinEdit.Button.UpGlyph    := FBM[1];
+}
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.MakeComponent;
+var
+    i, j : integer;
+    ter : TTerminalPanel;
+    chk : TCheckBox;
+
+begin
+
+    for i:=0 to HIGH( FGroupPanel ) do begin
+        FGroupPanel[i]  := TPanel.Create( Self );
+        FGroupPanel[i].Parent   := Self;
+
+        FGroupPanel[i].Width    := GPanel.Width;
+        FGroupPanel[i].Height   := GPanel.Height;
+        FGroupPanel[i].Top      := GPanel.Top;
+        FGroupPanel[i].Left     := GPanel.Left + (GPanel.Width + 1) * i;
+        FGroupPanel[i].Font     := GPanel.Font;
+        FGroupPanel[i].Tag      := i;
+        FGroupPanel[i].ParentBackGround := False;
+        FGroupPanel[i].Color    := GPanel.Color;
+        FGroupPanel[i].BevelKind    := GPanel.BevelKind;
+        FGroupPanel[i].BevelOuter   := GPanel.BevelOuter;
+        FGroupPanel[i].Color    := GPanel.Color;
+        FGroupPanel[i].Caption  := '';
+
+        FGroupPanel[i].OnMouseDown  := GPanelMouseDown;
+    end;
+
+    for i:=0 to HIGH( FTermPanel ) do begin
+        ter         := TTerminalPanel.Create( GScrollBox );
+        ter.Parent  := GScrollBox;
+
+        ter.Width   := TerPanel.Width;
+        ter.Height  := TerPanel.Height;
+        ter.Left    := TerPanel.Left;
+        ter.Top     := TerPanel.Top + (TerPanel.Height + 1) * i;
+        ter.Tag     := i;
+        ter.ParentBackGround := False;
+
+        ter.OnMouseDown := TerPanelMouseDown;
+
+        if ((i mod 2) = 0) then ter.Color := ODD_COLOR
+        else ter.Color                    := EVEN_COLOR;
+
+        ter.Caption := '';
+
+        ter.TermNo  := i + 1;
+
+        for j:=0 to 10-1 do begin
+
+            chk         := TCheckBox.Create( ter );
+            chk.Parent  := ter;
+            chk.Left    := 18 + 280 + (90 + 1) * j;
+            chk.Width   := 15;
+            chk.Top     := CheckBoxTemp.Top;
+
+            ter.FGrpCheck[j] := chk;
+        end;
+
+        FTermPanel[i] := ter;
+    end;
+
+end;
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.TerPanelMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+
+    ;
+
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.GPanelMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+   grp : integer;
+   po : TPoint;
+
+begin
+
+    grp := TPanel( Sender ).Tag;
+
+    if mbLeft = Button then begin
+        // 名称
+
+        // 名称入力ボックス表示
+        InputEdit.Parent    := Self;
+        InputEdit.Top       := FGroupPanel[grp].Top;
+        InputEdit.Left      := FGroupPanel[grp].Left;
+
+        InputEdit.Text      := FGroupPanel[grp].Caption;
+        InputEdit.Tag       := grp;
+        InputEdit.Visible   := True;
+
+        InputEdit.BringToFront;
+
+        InputEdit.SetFocus;
+    end;
+end;
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.GScrollBoxMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+const
+	WheelScrollSize		= 62;
+
+var
+    mv : integer;
+
+begin
+	// 移動量
+	if WheelDelta > 0 then mv := -WheelScrollSize
+    else                   mv := WheelScrollSize;
+
+    GScrollBox.VertScrollBar.Position := GScrollBox.VertScrollBar.Position + mv;
+    Handled := True;
+
+{
+
+//    if True = CheckOnScrollBox( sc, MousePos ) then begin
+    if True then begin
+
+        sc.VertScrollBar.Position := sc.VertScrollBar.Position + mv;
+
+        Handled := True;
+        Exit;
+    end;
+}
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.InputEditEnter(Sender: TObject);
+begin
+    ;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.InputEditExit(Sender: TObject);
+begin
+    InputEdit.Parent    := nil;
+    InputEdit.Visible   := False;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TGroupForm.InputEditKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+
+	case Key of
+    VK_RETURN:
+        begin
+        	//	ENTERが押された
+
+            // 確定
+            FGroupPanel[ InputEdit.Tag ].Caption    := InputEdit.Text;
+
+            InputEdit.Parent    := nil;
+            InputEdit.Visible   := False;
+        end;
+
+    VK_ESCAPE:
+        begin
+        	// ESCAPEが押された
+
+            InputEdit.Parent    := nil;
+            InputEdit.Visible   := False;
+        end;
+    end;
+
+end;
+
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	カスタムパネル関連
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure CenterTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	w, h, l, t : integer;
+
+begin
+    w := can.TextWidth( str );	l := ((rct.Right-rct.Left) - w) div 2;
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, rct.Left + l, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+
+    can.TextOut( rct.Left + l, rct.Top + t, str );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure LeftTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	h, t : integer;
+
+begin
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, rct.Left, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+
+    can.TextOut( rct.Left, rct.Top + t, str );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure RightTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	w, l, h, t : integer;
+
+begin
+    w := can.TextWidth( str );	l := rct.Right-w;
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, {rct.Left}l, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+//	SetBKMode( can.Handle, TRANSPARENT );
+    can.TextOut( l, rct.Top + t, str );
+end;
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TterminalPanel.SetTermNo( no : integer );
+begin
+	FTermNo := no;
+    Invalidate;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TterminalPanel.Paint;
+begin
+    DispGroup;
+end;
+
+//-----------------------------------------------------------------------------
+//	プレイリスト表示
+//-----------------------------------------------------------------------------
+procedure TterminalPanel.DispGroup;
+var
+	col : TColor;
+
+begin
+    if Caption <> '' then
+		Caption  := '';
+
+    // 下地
+{
+    // グラデーション使用
+    if True = MainForm.ConfigData.GradColor then begin
+		col := PerColor( Color, 50 );
+    	GradientFillCanvas( Canvas,
+				col,
+        		Color,
+            	RECT(0, 0, Width, Height), gdVertical );
+    end;
+}
+
+    Canvas.Brush.Color	:= Color;
+	Canvas.FrameRect( Rect( 0, 0, Width, Height ) );
+
+    // 端子番号
+    Canvas.Font.Name    := 'Arial Rounded MT Bold';
+    Canvas.Font.Size	:= 9;
+//    Canvas.Font.Style	:= [fsBold];
+    Canvas.Font.Style	:= [];
+    Canvas.Font.Color	:= clBlack;
+    CenterTextRect( Canvas, Rect( 0, 0, 60, Height ), IntToStr( FTermNo ) );
+
+    // ID名称
+    Canvas.Font.Name    := 'メイリオ';
+    Canvas.Font.Size	:= 9;
+    Canvas.Font.Style	:= [fsBold];
+    Canvas.Font.Style	:= [];
+    Canvas.Font.Color	:= clBlack;
+
+    LeftTextRect( Canvas, Rect( 60, 0, 60+100, Height ), FIDName );
+
+    // 素材名称
+    LeftTextRect( Canvas, Rect( 160, 0, 160+100, Height ), FMaterial );
+
+
+    // 表示順
+//    Canvas.Font.Name    := 'メイリオ';
+//    Canvas.Font.Size	:= 9;
+//    Canvas.Font.Style	:= [fsBold];
+//    Canvas.Font.Style	:= [];
+//    Canvas.Font.Color	:= clBlack;
+
+//    CenterTextRect( Canvas, Rect( 250, 0, 250+80, Height ), IntToStr( FIndex ), True );
+
+end;
+
+
+end.

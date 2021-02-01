@@ -1,0 +1,205 @@
+object GroupCategoryForm: TGroupCategoryForm
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsNone
+  Caption = 'GroupCategoryForm'
+  ClientHeight = 515
+  ClientWidth = 633
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object MusFlatButton2: TMusFlatButton
+    Left = 504
+    Top = 24
+    Width = 89
+    Height = 26
+    Caption = #20445#23384
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 0
+    Color = clBtnFace
+    DownColor = 33023
+  end
+  object SelectComboBox: TComboBox
+    Left = 24
+    Top = 20
+    Width = 209
+    Height = 26
+    Style = csDropDownList
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ItemIndex = 0
+    ParentFont = False
+    TabOrder = 1
+    Text = #30058#32068#12524#12452#12450#12454#12488#32232#38598
+    Items.Strings = (
+      #30058#32068#12524#12452#12450#12454#12488#32232#38598
+      #12497#12493#12523#35373#23450)
+  end
+  object RadioButton1: TRadioButton
+    Left = 40
+    Top = 72
+    Width = 113
+    Height = 17
+    Caption = 'Destination'
+    Checked = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 2
+    TabStop = True
+  end
+  object RadioButton2: TRadioButton
+    Left = 176
+    Top = 72
+    Width = 113
+    Height = 17
+    Caption = 'Source'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 3
+  end
+  object NoPanel: TPanel
+    Left = 24
+    Top = 116
+    Width = 50
+    Height = 30
+    Alignment = taLeftJustify
+    BevelOuter = bvNone
+    Caption = 'No.'
+    Color = 14511872
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = [fsBold]
+    ParentBackground = False
+    ParentFont = False
+    TabOrder = 4
+    VerticalAlignment = taAlignTop
+  end
+  object NamePanel: TPanel
+    Left = 75
+    Top = 116
+    Width = 200
+    Height = 30
+    Alignment = taLeftJustify
+    BevelOuter = bvNone
+    Caption = #21517#31216
+    Color = 14511872
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = [fsBold]
+    ParentBackground = False
+    ParentFont = False
+    TabOrder = 5
+    VerticalAlignment = taAlignTop
+  end
+  object DispPanel: TPanel
+    Left = 276
+    Top = 116
+    Width = 80
+    Height = 30
+    Alignment = taLeftJustify
+    BevelOuter = bvNone
+    Caption = #34920#31034#38918
+    Color = 14511872
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = [fsBold]
+    ParentBackground = False
+    ParentFont = False
+    TabOrder = 6
+    VerticalAlignment = taAlignTop
+  end
+  object CatePanel: TPanel
+    Left = 24
+    Top = 147
+    Width = 332
+    Height = 32
+    BevelOuter = bvNone
+    Color = clGray
+    ParentBackground = False
+    TabOrder = 7
+    Visible = False
+    OnMouseDown = CatePanelMouseDown
+  end
+  object InputEdit: TEdit
+    Left = 411
+    Top = 169
+    Width = 121
+    Height = 30
+    AutoSize = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -16
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 8
+    Text = 'InputEdit'
+    OnEnter = InputEditEnter
+    OnExit = InputEditExit
+    OnKeyDown = InputEditKeyDown
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 392
+    Top = 104
+    object N11: TMenuItem
+      Caption = '1'
+    end
+    object N12: TMenuItem
+      Caption = '2'
+    end
+    object N31: TMenuItem
+      Caption = '3'
+    end
+    object N41: TMenuItem
+      Caption = '4'
+    end
+    object N42: TMenuItem
+      Caption = '5'
+    end
+    object N51: TMenuItem
+      Caption = '6'
+    end
+    object N61: TMenuItem
+      Caption = '7'
+    end
+    object N81: TMenuItem
+      Caption = '8'
+    end
+    object N91: TMenuItem
+      Caption = '9'
+    end
+    object N101: TMenuItem
+      Caption = '10'
+    end
+  end
+end

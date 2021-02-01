@@ -1,0 +1,22 @@
+program Project1;
+
+uses
+  Vcl.Forms,
+  GroupCategoryUnit in 'GroupCategoryUnit.pas' {GroupCategoryForm},
+  GroupUnit in 'GroupUnit.pas' {GroupForm},
+  MainUnit in 'MainUnit.pas' {MainForm},
+  ListUnit in 'ListUnit.pas' {ListForm},
+  XPTLayoutUnit in 'XPTLayoutUnit.pas' {XPTLayoutForm};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+//  Application.CreateForm(TGroupCategoryForm, GroupCategoryForm);
+//  Application.CreateForm(TGroupForm, GroupForm);
+  Application.CreateForm(TMainForm, MainForm);
+//  Application.CreateForm(TXPTLayoutForm, XPTLayoutForm);
+  //  Application.CreateForm(TListForm, ListForm);
+  Application.Run;
+end.

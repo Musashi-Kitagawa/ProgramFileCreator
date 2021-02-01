@@ -1,0 +1,809 @@
+unit XPTLayoutUnit;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, AnsiStrings,
+//
+    ScreenDbUnit, Vcl.StdCtrls;
+
+type
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+  TPortPanel	= class( TPanel )
+  private
+	FTitle		: string;
+	FSubTitle 	: string;
+
+    FDataType   : integer;
+
+    procedure   DispPortPanel;
+    procedure   SetTitle( ttl : string );
+    procedure   SetSubTitle( ttl : string );
+
+  protected
+  	procedure 	Paint; override;
+
+  public
+
+	property	Title   : string        read FTitle     write SetTitle;
+	property	SubTitle : string       read FSubTitle  write SetSubTitle;
+
+  end;
+
+type
+  TXPTLayoutForm = class(TForm)
+    CatePanel: TPanel;
+    GrpPanel: TPanel;
+    LayoutPanel: TPanel;
+    PanelTmp: TPanel;
+    MovePanel: TPanel;
+    PanelTmp2: TPanel;
+    CategoryComboBox: TComboBox;
+    RadioButton1: TRadioButton;
+    RadioButton2: TRadioButton;
+    GroupComboBox: TComboBox;
+    procedure FormCreate(Sender: TObject);
+    procedure PanelTmpMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure PanelTmpEndDrag(Sender, Target: TObject; X, Y: Integer);
+    procedure PanelTmpDragOver(Sender, Source: TObject; X, Y: Integer;
+      State: TDragState; var Accept: Boolean);
+    procedure PanelTmpDragDrop(Sender, Source: TObject; X, Y: Integer);
+    procedure GroupComboBoxChange(Sender: TObject);
+    procedure CategoryComboBoxChange(Sender: TObject);
+    procedure PanelTmpMouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
+  private
+    { Private 宣言 }
+
+    FCurrentGroup       : integer;
+    FCurrentCategory    : integer;
+
+    FGridX      : integer;
+    FGridY      : integer;
+
+
+    FCateButton     : array [0..9] of TPortPanel;
+    FGroupButton    : array [0..9] of TPortPanel;
+    FLayoutButton   : array [0..49] of TPortPanel;
+
+    procedure   MakeConponent;
+
+    procedure   MakeGroupCombo;
+    procedure   MakeCategoryCombo;
+
+  public
+    { Public 宣言 }
+
+    procedure DispLayout;
+
+  end;
+
+var
+  XPTLayoutForm: TXPTLayoutForm;
+
+implementation
+
+{$R *.dfm}
+
+uses
+    MainUnit;
+
+
+procedure TXPTLayoutForm.FormCreate(Sender: TObject);
+begin
+
+
+    MakeConponent;
+
+    FCurrentGroup       := 0;
+    FCurrentCategory    := 0;
+
+end;
+
+
+
+procedure TXPTLayoutForm.MakeConponent;
+var
+    i : integer;
+    pnl : TPortPanel;
+
+begin
+
+    for i:=0 to HIGH( FCateButton ) do begin
+        pnl         := TPortPanel.Create( CatePanel );
+        pnl.Parent  := CatePanel;
+        pnl.Width   := PanelTmp2.Width;
+        pnl.Height  := PanelTmp2.Height;
+        pnl.Top     := PanelTmp2.Top;
+        pnl.Left    := 10 + (PanelTmp2.Width + 2) * i;
+
+        pnl.BevelKind   := PanelTmp2.BevelKind;
+        pnl.BevelOuter  := PanelTmp2.BevelOuter;
+        pnl.ParentBackGround    := False;
+        pnl.Caption     := '';
+        pnl.Color       := PanelTmp2.Color;
+
+        FCateButton[i]  := pnl;
+    end;
+
+    for i:=0 to HIGH( FGroupButton ) do begin
+        pnl         := TPortPanel.Create( GrpPanel );
+        pnl.Parent  := GrpPanel;
+        pnl.Width   := PanelTmp2.Width;
+        pnl.Height  := PanelTmp2.Height;
+        pnl.Top     := PanelTmp2.Top;
+        pnl.Left    := 10 + (PanelTmp2.Width + 2) * i;
+
+        pnl.BevelKind   := PanelTmp2.BevelKind;
+        pnl.BevelOuter  := PanelTmp2.BevelOuter;
+        pnl.ParentBackGround    := False;
+        pnl.Caption     := '';
+        pnl.Color       := PanelTmp2.Color;
+
+        FGroupButton[i]  := pnl;
+    end;
+
+    for i:=0 to HIGH( FLayoutButton ) do begin
+        pnl         := TPortPanel.Create( LayoutPanel );
+        pnl.Parent  := LayoutPanel;
+        pnl.Width   := PanelTmp.Width;
+        pnl.Height  := PanelTmp.Height;
+        pnl.Top     := 0 + (PanelTmp.Height + 2) * (i div 10);
+        pnl.Left    := 0 + (PanelTmp.Width + 2) * (i mod 10);
+
+        pnl.BevelKind   := PanelTmp.BevelKind;
+        pnl.BevelOuter  := PanelTmp.BevelOuter;
+        pnl.ParentBackGround    := False;
+        pnl.Caption     := '';
+        pnl.Color       := PanelTmp.Color;
+
+        pnl.OnMouseDown := PanelTmpMouseDown;
+        pnl.OnDragOver  := PanelTmpDragOver;
+        pnl.OnDragDrop  := PanelTmpDragDrop;
+        pnl.OnMouseMove := PanelTmpMouseMove;
+
+        FLayoutButton[i]  := pnl;
+    end;
+
+    FGridX      := 10;
+    FGridY      := 10;
+
+end;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+function _XSize( x : string; w : integer ) : integer;
+var
+    str : string;
+    e, e2 : Extended;
+
+begin
+    if '' = x then begin
+        Result := 60;   //pa.Width;
+        Exit;
+    end;
+
+    if AnsiRightStr( x, 2 ) = 'px' then begin
+
+        str := Copy( x, 1, Length(x)-2 );
+        Result := StrToIntDef( str, 0 );
+
+    end
+    else begin
+        e   := StrToFloatDef( x, 1 );
+        e2  := w;
+        Result := Round( e * Extended(e2) / 100 );
+
+//        s := StrToIntDef( x, 0 );
+//        Result := (s * pa.Width) div 100;
+    end;
+end;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+function XSize( x : string; pa : TPanel ) : integer;
+begin
+    Result := _XSize( x, pa.Width );
+end;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+function YSize( y : string; h : integer ) : integer;
+var
+    str : string;
+    e, e2 : Extended;
+
+begin
+    if '' = y then begin
+        Result := h;    //pa.Height;
+        Exit;
+    end;
+
+    if AnsiRightStr( y, 2 ) = 'px' then begin
+
+        str := Copy( y, 1, Length(y)-2 );
+        Result := StrToIntDef( str, 0 );
+
+    end
+    else begin
+        e   := StrToFloatDef( y, 0 );
+        e2  := h;   //pa.Height;
+        Result := Round( e * e2 / 100 );
+    end;
+end;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+function XPos( x : string; pa : TPanel ) : integer;
+var
+    str : string;
+    e, e2 : Extended;
+    rf : Boolean;
+
+begin
+
+    if AnsiRightStr( x, 2 ) = 'px' then begin
+
+        rf := False;
+        if '-' = x[1] then begin
+            rf := True;
+            x := Copy( x, 2, 10 );
+        end;
+
+        str := Copy( x, 1, Length(x)-2 );
+        Result := StrToIntDef( str, 0 );
+
+        // 右寄せ
+        if True = rf then begin
+            Result := pa.Width - Result;
+        end;
+
+    end
+    else begin
+
+//    s := StrToIntDef( x, 0 );
+        e   := StrToFloatDef( x, 0 );
+        e2  := pa.Width;
+
+        Result := Round( e * e2 / 100 );
+    end;
+
+end;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+function YPos( y : string; h : integer ) : integer;
+var
+    str : string;
+    e, e2 : Extended;
+
+begin
+    if AnsiRightStr( y, 2 ) = 'px' then begin
+
+        str := Copy( y, 1, Length(y)-2 );
+        Result := StrToIntDef( str, 0 );
+
+    end
+    else begin
+
+        e   := StrToFloatDef( y, 0 );
+        e2  := h;           //pa.Height;
+        Result := Round( e * e2 / 100 );
+    end;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+function CalcButtonSize(
+    colCount, rowCount : string;
+    pnl : TPanel;
+    left : string;
+    top : string;
+    width : string;
+    height : string;
+    topoffset : integer=0 ) : TRect;
+
+var
+    e, e2 : Extended;
+    h, w, x, y, hh, ww : integer;
+
+begin
+    e   := StrToFloatDef( colCount, 1 );
+    e2  := pnl.Width;
+    w   := Round( e2 / e ) ;
+
+    e   := StrToFloatDef( rowCount, 1 );
+//    e2  := pnl.Height;
+    e2  := pnl.Height - topoffset;
+    h   := Round( e2 / e );
+
+    if '' = width then begin
+
+        ww := 60;       // 暫定
+    end
+    else if '.' = width[1] then begin
+        e := StrToFloatDef( Copy( width, 2, 4 ), 1 );
+//        ww := Round( e ) * w;
+        ww := Round( e * w );
+    end
+    else begin
+        ww := XSize( width, pnl );
+    end;
+
+    if '' = height then begin
+
+        hh := 60;       // 暫定
+    end
+    else if '.' = height[1] then begin
+        e   := StrToFloatDef( Copy( height,  2, 4 ), 1 );
+        hh  := Round( e ) * h;
+    end
+    else begin
+        hh := YSize( height, (pnl.Height - topoffset) );  //pnl );
+    end;
+
+    if '.' = left[1] then begin
+        e   := StrToFloatDef( Copy( left, 2, 4 ), 1 );
+        e2  := w;
+        x   := Round( e * e2 );
+    end
+    else begin
+        x := XPos( left, pnl );
+    end;
+
+    if '.' = top[1] then begin
+        e   := StrToFloatDef( Copy( top,  2, 4 ), 1 );
+        e2  := h;
+        y   := Round( e * e2 ) ;
+    end
+    else begin
+        y := YPos( top, (pnl.Height - topoffset) ); //pnl );
+    end;
+
+    Result := RECT( x, y+topoffset, ww, hh );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TXPTLayoutForm.GroupComboBoxChange(Sender: TObject);
+begin
+
+    FCurrentGroup   := GroupComboBox.ItemIndex;
+
+    DispLayout;
+
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TXPTLayoutForm.CategoryComboBoxChange(Sender: TObject);
+begin
+    FCurrentCategory    := CategoryComboBox.ItemIndex;
+    FCurrentGroup       := 0;
+
+    DispLayout;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TXPTLayoutForm.MakeCategoryCombo;
+var
+    cate : TLayoutButton;
+    grp : TLayoutData;
+    btn : TLayoutButton;
+    i : integer;
+
+begin
+    CategoryComboBox.Items.Clear;
+    for i:=0 to MainForm.FLayoutData[ TMainForm.typXPT ].List.Count-1 do begin
+        btn := MainForm.FLayoutData[ TMainForm.typXPT ].List.Data[i];
+        CategoryComboBox.Items.Add( TUiScreenSelectButton( btn.Button ).F_Text );
+    end;
+
+    CategoryComboBox.ItemIndex := FCurrentCategory;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TXPTLayoutForm.PanelTmpMouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
+var
+    pnl : TPortPanel;
+
+
+begin
+    beep;
+
+    pnl := TPortPanel( Sender );
+
+    if PtInRect( RECT( pnl.Left, pnl.Top, pnl.Left+pnl.Width, pnl.Top+pnl.Height), Point( x, y ) ) then begin
+
+        Screen.Cursor   := crSizeNESW;
+//        Screen.Cursor   := crSizeNS;
+//        Screen.Cursor   := crSizeNWSE;
+//        Screen.Cursor   := crSizeWE;
+    end
+    else begin
+
+        Screen.Cursor   := crDefault;
+
+    end;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TXPTLayoutForm.MakeGroupCombo;
+var
+    i : integer;
+    btn : TLayoutButton;
+    cate : TLayoutButton;
+    grp : TLayoutData;
+
+begin
+    GroupComboBox.Items.Clear;
+
+    cate := MainForm.FLayoutData[ TMainForm.typXPT ].List.Data[ FCurrentCategory ];
+
+    grp := cate.Child[0];
+    btn := grp.List.Data[ FCurrentGroup ];
+
+
+    for i:=0 to grp.List.Count-1 do begin
+
+        btn := grp.List.Data[ i ];
+//        btn := MainForm.FLayoutData[ TMainForm.typXPT ].List.Data[i];
+
+        GroupComboBox.Items.Add( TUiScreenSelectButton( btn.Button ).F_Text );
+    end;
+
+    GroupComboBox.ItemIndex := FCurrentGroup;
+end;
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TXPTLayoutForm.DispLayout;
+var
+    lay : TLayoutData;
+    i, j : integer;
+    rct : TRect;
+    dst : TUiDstButton;
+
+    cate : TLayoutButton;
+    grp : TLayoutData;
+    btn : TLayoutButton;
+
+begin
+
+    MakeCategoryCombo;
+
+    MakeGroupCombo;
+
+    // １個目のカテゴリボタン
+    cate := MainForm.FLayoutData[ TMainForm.typXPT ].List.Data[ FCurrentCategory ];
+
+    // グループのリスト
+    grp := cate.Child[0];
+
+//    for i:=0 to grp.List.Count-1 do begin
+    for i:=0 to HIGH( FLayoutButton ) do begin
+
+{
+        if btn = nil then break;
+
+        FGroupPanel[i].Caption  := TUiScreenSelectButton( btn.Button ).F_Text;
+}
+
+        btn := grp.List.Data[ FCurrentGroup ];
+        lay := btn.FChild[0];
+
+        if lay = nil then continue;
+
+//        for j:=0 to lay.list.count-1 do begin
+
+        btn := TLayoutButton( lay.List.Data[i] );
+
+        if nil <> btn then begin
+
+            dst := TUiDstButton( btn.Button );
+
+            rct := CalcButtonSize(
+                    lay.Frame.F_ColCount,
+                    lay.Frame.F_RowCount,
+                    LayoutPanel,
+                    dst.F_Left,
+                    dst.F_Top,
+                    dst.F_Width,
+                    dst.F_Height,
+                    StrToIntDef( lay.Frame.F_TitleBarHeightPix, 0 ) );
+
+
+            FLayoutButton[i].Left   := rct.Left;
+            FLayoutButton[i].Top    := rct.Top;
+            FLayoutButton[i].Width  := rct.Right;
+            FLayoutButton[i].Height := rct.Bottom;
+
+            FLayoutButton[i].Title      := dst.F_DstPortNo;
+            FLayoutButton[i].SubTitle   := dst.F_Order;
+
+            FLayoutButton[i].Visible    := True;
+
+        end
+        else begin
+            FLayoutButton[i].Visible    := False;
+        end;
+
+
+
+//        end;
+
+    end;
+
+
+
+
+(*
+
+    lay := MainForm.FLayoutButton[ TMainForm.typXpt, 0{カテゴリ}, 0{GROUP}, TMainForm.typDst ];
+
+    for i:=0 to HIGH( FLayoutButton ) do begin
+
+        dst := TUiDstButton( lay.List.Data[i] );
+
+        if nil <> dst then begin
+
+
+            rct := CalcButtonSize(
+                    lay.Frame.F_ColCount,
+                    lay.Frame.F_RowCount,
+                    LayoutPanel,
+                    dst.F_Left,
+                    dst.F_Top,
+                    dst.F_Width,
+                    dst.F_Height,
+                    StrToIntDef( lay.Frame.F_TitleBarHeightPix, 0 ) );
+
+
+            FLayoutButton[i].Left   := rct.Left;
+            FLayoutButton[i].Top    := rct.Top;
+            FLayoutButton[i].Width  := rct.Right;
+            FLayoutButton[i].Height := rct.Bottom;
+
+            FLayoutButton[i].Title      := dst.F_DstPortNo;
+            FLayoutButton[i].SubTitle   := dst.F_Order;
+
+            FLayoutButton[i].Visible    := True;
+
+        end
+        else begin
+            FLayoutButton[i].Visible    := False;
+        end;
+
+    end;
+*)
+
+end;
+
+
+
+
+
+
+procedure TXPTLayoutForm.PanelTmpDragDrop(Sender, Source: TObject; X,
+  Y: Integer);
+begin
+
+    MovePanel.Visible  := False;
+    ;
+end;
+
+procedure TXPTLayoutForm.PanelTmpDragOver(Sender, Source: TObject; X,
+  Y: Integer; State: TDragState; var Accept: Boolean);
+var
+    po : TPoint;
+
+begin
+
+    po := TPanel( Sender ).ClientToScreen( Point( X, Y ) );
+    po := LayoutPanel.ScreenToClient( po );
+
+    MovePanel.Left := po.X - (MovePanel.Width div 2);    //TPortPanel( Source ).Left;
+    MovePanel.Top  := po.Y - (MovePanel.Height div 2);    //TPortPanel( Source ).Top;
+
+
+     Accept := True;
+end;
+
+procedure TXPTLayoutForm.PanelTmpEndDrag(Sender, Target: TObject; X,
+  Y: Integer);
+begin
+
+    MovePanel.Visible  := False;
+    ;
+end;
+
+
+procedure TXPTLayoutForm.PanelTmpMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+
+var
+    pnl : TPortPanel;
+
+
+begin
+
+    if mbLeft = Button then begin
+
+        pnl := TPortPanel( Sender );
+
+        MovePanel.Left := pnl.Left;
+        MovePanel.Top  := pnl.Top;
+        MovePanel.Width    := pnl.Width;
+        MovePanel.Height   := pnl.Height;
+        MovePanel.Visible  := True;
+        MovePanel.BringToFront;
+
+        pnl.BeginDrag( False );
+
+    end;
+
+
+
+
+end;
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	カスタムパネル関連
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure CenterTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=True );
+var
+	w, h, l, t : integer;
+
+begin
+    w := can.TextWidth( str );	l := ((rct.Right-rct.Left) - w) div 2;
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, rct.Left + l, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+
+    can.TextOut( rct.Left + l, rct.Top + t, str );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure LeftTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	h, t : integer;
+
+begin
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, rct.Left, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+
+    can.TextOut( rct.Left, rct.Top + t, str );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure RightTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	w, l, h, t : integer;
+
+begin
+    w := can.TextWidth( str );	l := rct.Right-w;
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, {rct.Left}l, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+//	SetBKMode( can.Handle, TRANSPARENT );
+    can.TextOut( l, rct.Top + t, str );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TPortPanel.SetTitle( ttl : string );
+begin
+	FTitle  := ttl;
+    Invalidate;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TPortPanel.SetSubTitle( ttl : string );
+begin
+	FSubTitle  := ttl;
+    Invalidate;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TPortPanel.Paint;
+begin
+    DispPortPanel;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TPortPanel.DispPortPanel;
+var
+	col : TColor;
+    h : integer;
+
+begin
+    if Caption <> '' then
+		Caption  := '';
+
+    // 下地
+{
+    // グラデーション使用
+    if True = MainForm.ConfigData.GradColor then begin
+		col := PerColor( Color, 50 );
+    	GradientFillCanvas( Canvas,
+				col,
+        		Color,
+            	RECT(0, 0, Width, Height), gdVertical );
+    end;
+}
+
+    Canvas.Brush.Color	:= Color;
+	Canvas.FrameRect( Rect( 0, 0, Width, Height ) );
+
+    // ALIAS
+    Canvas.Font.Name    := 'Arial Rounded MT Bold';
+    Canvas.Font.Size	:= 12;
+    Canvas.Font.Style	:= [fsBold];
+    Canvas.Font.Style	:= [];
+    Canvas.Font.Color	:= clBlack;
+
+    h := Height * 70 div 100;
+    CenterTextRect( Canvas, Rect( 0, 0, Width, Height-h ), FTitle );
+
+    // ID名称
+//    Canvas.Font.Name    := 'メイリオ';
+    Canvas.Font.Size	:= 9;
+//    Canvas.Font.Style	:= [{fsBold}];
+//    Canvas.Font.Style	:= [];
+//    Canvas.Font.Color	:= clBlack;
+
+    CenterTextRect( Canvas, Rect( 0, h, Width, Height ), FSubTitle );
+
+{
+    // 素材名称
+    LeftTextRect( Canvas, Rect( 160, 0, 160+100, Height ), FMaterial );
+}
+
+
+    // 表示順
+//    Canvas.Font.Name    := 'メイリオ';
+//    Canvas.Font.Size	:= 9;
+//    Canvas.Font.Style	:= [fsBold];
+//    Canvas.Font.Style	:= [];
+//    Canvas.Font.Color	:= clBlack;
+
+//    CenterTextRect( Canvas, Rect( 250, 0, 250+80, Height ), IntToStr( FIndex ), True );
+
+end;
+
+end.

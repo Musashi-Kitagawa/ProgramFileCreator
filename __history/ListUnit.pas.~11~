@@ -1,0 +1,319 @@
+unit ListUnit;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
+
+type
+//-----------------------------------------------------------------------------
+//	プレイリスト表示用
+//-----------------------------------------------------------------------------
+  TMyListPanel	= class( TPanel )
+  private
+	FTitle		: string;
+	FIDName 	: string;
+	FMaterial 	: string;
+
+    FCheck      : array [0..7] of TCheckBox;
+    FRadio      : array [0..7] of TRadioButton;
+
+    FDataType   : integer;
+
+    procedure   DispList;
+    procedure   SetTitle( ttl : string );
+//    procedure   SetIndex( inx : integer );
+
+  protected
+  	procedure 	Paint; override;
+
+  public
+
+	property	Title   : string        read FTitle     write SetTitle;
+//	property	IndexNo	: integer	    read FIndex	    write SetIndex;
+
+  end;
+
+
+type
+  TListForm = class(TForm)
+    NamePanel: TPanel;
+    RadioButton1: TRadioButton;
+    RadioButton2: TRadioButton;
+    LPanel: TPanel;
+    Panel11: TPanel;
+    SelectComboBox: TComboBox;
+    ComboBox1: TComboBox;
+    CheckBox1: TCheckBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
+    CheckBox4: TCheckBox;
+    CheckBox5: TCheckBox;
+    CheckBoxTemp: TCheckBox;
+    RadioButtonTemp: TRadioButton;
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private 宣言 }
+
+    FColmnNamePanel : array [0..8] of TPanel;
+    FListPanel      : array [0..8] of TMyListPanel;
+
+    procedure   MakeComponent;
+
+  public
+    { Public 宣言 }
+  end;
+
+var
+  ListForm: TListForm;
+
+implementation
+
+{$R *.dfm}
+
+const
+    TOP_COLOR   = $00c47244;
+    ODD_COLOR   = $EAD5CF;
+    EVEN_COLOR  = $F5EBE9;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TListForm.FormCreate(Sender: TObject);
+begin
+{
+//    InputEdit.Visible   := False;
+
+//    NoPanel.Caption     := ' ' + NoPanel.Caption;
+    NamePanel.Color       := TOP_COLOR;
+
+//    IDPanel.Caption     := ' ' + NamePanel.Caption;
+    IDPanel.Color       := TOP_COLOR;
+
+//    MatPanel.Caption    := ' ' + DispPanel.Caption;
+    MatPanel.Color      := TOP_COLOR;
+
+//    GRPPanel.Color      := TOP_COLOR;
+}
+    MakeComponent;
+
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TListForm.MakeComponent;
+var
+    i, j : integer;
+    chk : TCheckBox;
+    ra : TRadioButton;
+
+begin
+
+    for i:=0 to HIGH( FColmnNamePanel ) do begin
+        FColmnNamePanel[i]  := TPanel.Create( Self );
+        FColmnNamePanel[i].Parent   := Self;
+
+        FColmnNamePanel[i].Width    := NamePanel.Width;
+        FColmnNamePanel[i].Height   := NamePanel.Height;
+        FColmnNamePanel[i].Top      := NamePanel.Top;
+        FColmnNamePanel[i].Left     := NamePanel.Left + (NamePanel.Width + 1) * i;
+        FColmnNamePanel[i].Font     := NamePanel.Font;
+        FColmnNamePanel[i].Tag      := i;
+        FColmnNamePanel[i].ParentBackGround := False;
+        FColmnNamePanel[i].Color    := TOP_COLOR;
+        FColmnNamePanel[i].BevelKind    := NamePanel.BevelKind;
+        FColmnNamePanel[i].BevelOuter   := NamePanel.BevelOuter;
+        FColmnNamePanel[i].Color    := NamePanel.Color;
+
+        case i of
+        1:  FColmnNamePanel[i].Caption  := 'ID名称';
+        2:  FColmnNamePanel[i].Caption  := '素材名称';
+        8:  FColmnNamePanel[i].Caption  := '表示';
+        else
+            FColmnNamePanel[i].Caption  := '';
+        end;
+
+//        FGroupPanel[i].OnMouseDown  := GPanelMouseDown;
+    end;
+
+    for i:=0 to HIGH( FListPanel ) do begin
+        FListPanel[i]           := TMyListPanel.Create( Self );
+        FListPanel[i].Parent    := Self;
+
+        FListPanel[i].Width     := LPanel.Width;
+        FListPanel[i].Height    := LPanel.Height;
+        FListPanel[i].Left      := LPanel.Left;
+        FListPanel[i].Top       := LPanel.Top + (LPanel.Height + 1) * i;
+        FListPanel[i].Tag       := i;
+        FListPanel[i].ParentBackGround := False;
+
+        FListPanel[i].Title     := 'Alias' + IntToStr( i + 1 );
+
+//        FListPanel[i].OnMouseDown := TerPanelMouseDown;
+
+        if ((i mod 2) = 0) then FListPanel[i].Color := ODD_COLOR
+        else FListPanel[i].Color                    := EVEN_COLOR;
+
+        FListPanel[i].Caption := '';
+
+//        ter.TermNo  := i + 1;
+
+        for j:=0 to 8-1 do begin
+
+            ra         := TRadioButton.Create( FListPanel[i] );
+            ra.Parent  := FListPanel[i];
+            ra.Left    := 18 + 130 + (100 + 1) * j;
+            ra.Width   := 15;
+            ra.Top     := RadioButtonTemp.Top;  //  CheckBoxTemp.Top;
+
+            FListPanel[i].FRadio[j]  := ra;
+        end;
+
+    end;
+
+end;
+
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	カスタムパネル関連
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure CenterTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	w, h, l, t : integer;
+
+begin
+    w := can.TextWidth( str );	l := ((rct.Right-rct.Left) - w) div 2;
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, rct.Left + l, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+
+    can.TextOut( rct.Left + l, rct.Top + t, str );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure LeftTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	h, t : integer;
+
+begin
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, rct.Left, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+
+    can.TextOut( rct.Left, rct.Top + t, str );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure RightTextRect( can : TCanvas; rct : TRect; str : string; opt : Boolean=False );
+var
+	w, l, h, t : integer;
+
+begin
+    w := can.TextWidth( str );	l := rct.Right-w;
+    h := can.TextHeight( str );	t := ((rct.Bottom-rct.Top) - h) div 2;
+
+//    can.TextRect( rct, {rct.Left}l, rct.Top + t, str );
+
+	if opt = True then
+    	SetBKMode( can.Handle, OPAQUE )
+	else
+    	SetBKMode( can.Handle, TRANSPARENT );
+//	SetBKMode( can.Handle, TRANSPARENT );
+    can.TextOut( l, rct.Top + t, str );
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TMyListPanel.SetTitle( ttl : string );
+begin
+	FTitle  := ttl;
+    Invalidate;
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TMyListPanel.Paint;
+begin
+    DispList;
+end;
+
+//-----------------------------------------------------------------------------
+//	プレイリスト表示
+//-----------------------------------------------------------------------------
+procedure TMyListPanel.DispList;
+var
+	col : TColor;
+
+begin
+    if Caption <> '' then
+		Caption  := '';
+
+    // 下地
+{
+    // グラデーション使用
+    if True = MainForm.ConfigData.GradColor then begin
+		col := PerColor( Color, 50 );
+    	GradientFillCanvas( Canvas,
+				col,
+        		Color,
+            	RECT(0, 0, Width, Height), gdVertical );
+    end;
+}
+
+    Canvas.Brush.Color	:= Color;
+	Canvas.FrameRect( Rect( 0, 0, Width, Height ) );
+
+    // ALIAS
+    Canvas.Font.Name    := 'Arial Rounded MT Bold';
+    Canvas.Font.Size	:= 9;
+//    Canvas.Font.Style	:= [fsBold];
+    Canvas.Font.Style	:= [];
+    Canvas.Font.Color	:= clBlack;
+    CenterTextRect( Canvas, Rect( 0, 0, 100, Height ), FTitle );
+
+    // ID名称
+    Canvas.Font.Name    := 'メイリオ';
+    Canvas.Font.Size	:= 9;
+    Canvas.Font.Style	:= [fsBold];
+    Canvas.Font.Style	:= [];
+    Canvas.Font.Color	:= clBlack;
+
+    LeftTextRect( Canvas, Rect( 60, 0, 60+100, Height ), FIDName );
+
+    // 素材名称
+    LeftTextRect( Canvas, Rect( 160, 0, 160+100, Height ), FMaterial );
+
+
+    // 表示順
+//    Canvas.Font.Name    := 'メイリオ';
+//    Canvas.Font.Size	:= 9;
+//    Canvas.Font.Style	:= [fsBold];
+//    Canvas.Font.Style	:= [];
+//    Canvas.Font.Color	:= clBlack;
+
+//    CenterTextRect( Canvas, Rect( 250, 0, 250+80, Height ), IntToStr( FIndex ), True );
+
+end;
+
+
+end.

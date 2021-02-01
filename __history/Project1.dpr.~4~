@@ -1,0 +1,18 @@
+program Project1;
+
+uses
+  Vcl.Forms,
+  GroupUnit in 'GroupUnit.pas' {GroupCategoryForm},
+  GroupCategoryUnit in 'GroupCategoryUnit.pas' {GroupForm},
+  MainUnit in 'MainUnit.pas' {MainForm};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+//  Application.CreateForm(TGroupCategoryForm, GroupCategoryForm);
+//  Application.CreateForm(TGroupForm, GroupForm);
+  Application.CreateForm(TMainForm, MainForm);
+  Application.Run;
+end.

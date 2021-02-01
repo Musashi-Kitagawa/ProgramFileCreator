@@ -1,0 +1,900 @@
+object ScreenButtonForm: TScreenButtonForm
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = 'UiScreenSelectButton'
+  ClientHeight = 638
+  ClientWidth = 623
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poMainFormCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 33
+    Top = 17
+    Width = 23
+    Height = 12
+    Caption = 'F_Id'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label3: TLabel
+    Left = 305
+    Top = 42
+    Width = 67
+    Height = 17
+    Caption = #35242#12398#12497#12493#12523'ID'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label4: TLabel
+    Left = 305
+    Top = 69
+    Width = 205
+    Height = 17
+    Caption = #34920#31034#12487#12540#12479#12288#65288'\'#12510#12540#12463#12391#25913#34892#12391#12365#12414#12377#65289
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label5: TLabel
+    Left = 305
+    Top = 232
+    Width = 33
+    Height = 17
+    Caption = #27178#20301#32622
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label6: TLabel
+    Left = 305
+    Top = 258
+    Width = 11
+    Height = 17
+    Caption = #24133
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label7: TLabel
+    Left = 305
+    Top = 310
+    Width = 22
+    Height = 17
+    Caption = #39640#12373
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label8: TLabel
+    Left = 305
+    Top = 285
+    Width = 33
+    Height = 17
+    Caption = #32294#20301#32622
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label9: TLabel
+    Left = 305
+    Top = 339
+    Width = 77
+    Height = 17
+    Caption = #12508#12479#12531#12508#12540#12480#24133
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label10: TLabel
+    Left = 305
+    Top = 366
+    Width = 88
+    Height = 17
+    Caption = #12504#12483#12480#12496#12540#20184#12369#12427
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label11: TLabel
+    Left = 305
+    Top = 393
+    Width = 66
+    Height = 17
+    Caption = #12504#12483#12480#12496#12540#33394
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label12: TLabel
+    Left = 305
+    Top = 420
+    Width = 77
+    Height = 17
+    Caption = #12504#12483#12480#12496#12540#39640#12373
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label13: TLabel
+    Left = 305
+    Top = 447
+    Width = 220
+    Height = 17
+    Caption = #12504#12483#12480#12496#12540#20869#12398#12486#12461#12473#12488#12288#12288#65288#8251#26410#23550#24540#65311#65289
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label14: TLabel
+    Left = 305
+    Top = 474
+    Width = 297
+    Height = 17
+    Caption = #12504#12483#12480#12496#12540#20869#12398#12486#12461#12473#12488#12501#12457#12531#12488#12469#12452#12474#12288#12288#65288#8251#26410#23550#24540#65311#65289
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label15: TLabel
+    Left = 305
+    Top = 582
+    Width = 143
+    Height = 17
+    Caption = #28961#21177#12395#12377#12427#12288#65288#8251#26410#23550#24540#65311#65289
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 305
+    Top = 204
+    Width = 77
+    Height = 17
+    Caption = #12452#12531#12487#12483#12463#12473#20516
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label16: TLabel
+    Left = 305
+    Top = 150
+    Width = 231
+    Height = 17
+    Caption = #36899#21205#12375#12390#29366#24907#12434#22793#26356#12377#12427#12508#12479#12531#12434#23450#32681#12375#12414#12377#12290
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label17: TLabel
+    Left = 305
+    Top = 501
+    Width = 253
+    Height = 17
+    Caption = 'ACCOUT'#12398#12497#12540#12511#12483#12471#12519#12531#35373#23450#12434#21453#26144#12377#12427#12363#12393#12358#12363
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object Label18: TLabel
+    Left = 305
+    Top = 609
+    Width = 4
+    Height = 17
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+  end
+  object CheckBox1: TCheckBox
+    Left = 16
+    Top = 43
+    Width = 150
+    Height = 17
+    Caption = 'F_FrameId'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 1
+  end
+  object F_FrameIdEdit: TEdit
+    Left = 167
+    Top = 38
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 2
+    Text = 'F_FrameIdEdit'
+  end
+  object CheckBox2: TCheckBox
+    Left = 16
+    Top = 70
+    Width = 150
+    Height = 17
+    Caption = 'F_Text'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 3
+  end
+  object F_TextEdit: TEdit
+    Left = 167
+    Top = 65
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 4
+    Text = 'Edit1'
+  end
+  object CheckBox3: TCheckBox
+    Left = 16
+    Top = 97
+    Width = 150
+    Height = 17
+    Caption = 'F_Key'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 5
+  end
+  object F_KeyEdit: TEdit
+    Left = 167
+    Top = 92
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 6
+    Text = 'Edit1'
+  end
+  object CheckBox4: TCheckBox
+    Left = 16
+    Top = 124
+    Width = 150
+    Height = 17
+    Caption = 'F_FrameName'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 7
+  end
+  object F_FrameNameEdit: TEdit
+    Left = 167
+    Top = 119
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 8
+    Text = 'Edit1'
+  end
+  object CheckBox5: TCheckBox
+    Left = 16
+    Top = 151
+    Width = 150
+    Height = 17
+    Caption = 'F_BeforeRelayKey'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 9
+  end
+  object F_BeforeRelayKeyEdit: TEdit
+    Left = 167
+    Top = 146
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 10
+    Text = 'Edit1'
+  end
+  object CheckBox6: TCheckBox
+    Left = 16
+    Top = 178
+    Width = 150
+    Height = 17
+    Caption = 'F_Attributes'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 11
+  end
+  object F_AttributesEdit: TEdit
+    Left = 167
+    Top = 173
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 12
+    Text = 'Edit1'
+  end
+  object CheckBox7: TCheckBox
+    Left = 16
+    Top = 205
+    Width = 150
+    Height = 17
+    Caption = 'F_Order'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 13
+  end
+  object F_OrderEdit: TEdit
+    Left = 167
+    Top = 200
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 14
+    Text = 'Edit1'
+  end
+  object CheckBox8: TCheckBox
+    Left = 16
+    Top = 232
+    Width = 150
+    Height = 17
+    Caption = 'F_Left'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 15
+  end
+  object F_LeftEdit: TEdit
+    Left = 167
+    Top = 227
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 16
+    Text = 'Edit1'
+  end
+  object CheckBox9: TCheckBox
+    Left = 16
+    Top = 259
+    Width = 150
+    Height = 17
+    Caption = 'F_Width'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 17
+  end
+  object F_WidthEdit: TEdit
+    Left = 167
+    Top = 254
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 18
+    Text = 'Edit1'
+  end
+  object CheckBox10: TCheckBox
+    Left = 16
+    Top = 286
+    Width = 150
+    Height = 17
+    Caption = 'F_Top'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 19
+  end
+  object F_TopEdit: TEdit
+    Left = 167
+    Top = 281
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 20
+    Text = 'Edit1'
+  end
+  object CheckBox11: TCheckBox
+    Left = 16
+    Top = 311
+    Width = 150
+    Height = 17
+    Caption = 'F_Height'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 21
+  end
+  object F_HeightEdit: TEdit
+    Left = 167
+    Top = 308
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 22
+    Text = 'Edit1'
+  end
+  object CheckBox12: TCheckBox
+    Left = 16
+    Top = 340
+    Width = 150
+    Height = 17
+    Caption = 'F_BorderWidth'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 23
+  end
+  object F_BorderWidthEdit: TEdit
+    Left = 167
+    Top = 335
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 24
+    Text = 'Edit1'
+  end
+  object CheckBox13: TCheckBox
+    Left = 16
+    Top = 367
+    Width = 150
+    Height = 17
+    Caption = 'F_IncludeHeadbar'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 25
+  end
+  object F_IncludeHeadbarEdit: TEdit
+    Left = 167
+    Top = 362
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 26
+    Text = 'Edit1'
+  end
+  object CheckBox14: TCheckBox
+    Left = 16
+    Top = 394
+    Width = 150
+    Height = 17
+    Caption = 'F_HeadbarColor'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 27
+  end
+  object F_HeadbarColorEdit: TEdit
+    Left = 167
+    Top = 389
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 28
+    Text = 'Edit1'
+  end
+  object CheckBox15: TCheckBox
+    Left = 16
+    Top = 421
+    Width = 150
+    Height = 17
+    Caption = 'F_HeadbarHeight'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 29
+  end
+  object F_HeadbarHeightEdit: TEdit
+    Left = 167
+    Top = 416
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 30
+    Text = 'Edit1'
+  end
+  object CheckBox16: TCheckBox
+    Left = 16
+    Top = 448
+    Width = 150
+    Height = 17
+    Caption = 'F_HeadbarText'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 31
+  end
+  object F_HeadbarTextEdit: TEdit
+    Left = 167
+    Top = 443
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 32
+    Text = 'Edit1'
+  end
+  object CheckBox17: TCheckBox
+    Left = 16
+    Top = 475
+    Width = 150
+    Height = 17
+    Caption = 'F_HeadbarFontSize'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 33
+  end
+  object F_HeadbarFontSizeEdit: TEdit
+    Left = 167
+    Top = 470
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 34
+    Text = 'Edit1'
+  end
+  object CheckBox18: TCheckBox
+    Left = 16
+    Top = 502
+    Width = 150
+    Height = 17
+    Caption = 'F_IsPermissionHandled'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 35
+  end
+  object F_IsPermissionHandledEdit: TEdit
+    Left = 167
+    Top = 497
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 36
+    Text = 'Edit1'
+  end
+  object CheckBox19: TCheckBox
+    Left = 16
+    Top = 529
+    Width = 150
+    Height = 17
+    Caption = 'F_IsSelectionCancel'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 37
+  end
+  object F_IsSelectionCancelEdit: TEdit
+    Left = 167
+    Top = 524
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 38
+    Text = 'Edit1'
+  end
+  object CheckBox20: TCheckBox
+    Left = 16
+    Top = 556
+    Width = 150
+    Height = 17
+    Caption = 'F_FontSize'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 39
+  end
+  object F_FontSizeEdit: TEdit
+    Left = 167
+    Top = 551
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 40
+    Text = 'Edit1'
+  end
+  object CheckBox21: TCheckBox
+    Left = 16
+    Top = 583
+    Width = 150
+    Height = 17
+    Caption = 'F_IsDisabled'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 41
+  end
+  object F_IsDisabledEdit: TEdit
+    Left = 167
+    Top = 578
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 42
+    Text = 'Edit1'
+  end
+  object OKButton: TButton
+    Left = 527
+    Top = 28
+    Width = 75
+    Height = 25
+    Caption = 'OK'
+    ModalResult = 1
+    TabOrder = 43
+  end
+  object CancelButton: TButton
+    Left = 527
+    Top = 69
+    Width = 75
+    Height = 25
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 44
+  end
+  object Edit1: TEdit
+    Left = 167
+    Top = 11
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 0
+    Text = 'F_FrameIdEdit'
+  end
+  object CheckBox22: TCheckBox
+    Left = 16
+    Top = 610
+    Width = 150
+    Height = 17
+    Caption = 'F_IsListItem'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial Rounded MT Bold'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 45
+  end
+  object Edit2: TEdit
+    Left = 167
+    Top = 605
+    Width = 121
+    Height = 26
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = #12513#12452#12522#12458
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 46
+    Text = 'Edit1'
+  end
+end

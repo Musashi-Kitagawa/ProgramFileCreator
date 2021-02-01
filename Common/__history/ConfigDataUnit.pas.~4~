@@ -1,0 +1,286 @@
+//******************************************************************************
+//  MDC3000 for Note
+//  コンフィグレーションデータ
+//
+//  武蔵株式会社
+//  Apr - 4 - '17
+//******************************************************************************
+unit ConfigDataUnit;
+
+interface
+
+uses
+	Windows, Messages, Classes, SysUtils, Controls, Forms, StdCtrls, Graphics,
+    StrUtils, WinSock, math, ComCtrls, ExtCtrls, MMSystem, Dialogs, IniFiles,
+    System.DateUtils,
+//
+	CommonUnit;
+
+type
+
+//------------------------------------------------------------------------------
+//	ディバイス固有の設定用
+//------------------------------------------------------------------------------
+    TConfigSystem	= record
+
+        // アプリタイトル
+        AppTitle                : string;
+
+        //	データディレクトリ
+        DbPath                  : string;
+
+    end;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+    TConfigUser = record
+
+    end;
+
+    TConfigration = record
+        system      : TConfigSystem;
+        user	    : TConfigUser;
+    end;
+
+//    PTConfigration = ^TConfigration;
+
+//------------------------------------------------------------------------------
+//  コンフィグレーションデータクラス
+//------------------------------------------------------------------------------
+    TConfigData = class(TObject)
+
+    private
+
+    	FFileName 	: string;
+
+    public
+
+        config  	: TConfigration;
+
+        // コンストラクタ
+        constructor Create( fn : string='' );
+
+        // デストラクタ
+        destructor 	Destroy; override;
+
+        procedure   CopySystem( src : TConfigData );
+        function    CompareSystem( src : TConfigData ) : Boolean;
+        procedure   Initial;
+        procedure   SystemLoad( fn : string );
+        procedure   Save( fn : string='' );
+        procedure   SystemSave;
+        procedure   UserLoad( fn : string );
+        procedure   UserSave;
+
+//== SYSTEM ===================================================================
+
+		property	AppTitle : string		    read config.system.AppTitle		        write config.system.AppTitle;
+		property	DbPath : string		        read config.system.DbPath		        write config.system.DbPath;
+
+
+    end;
+
+implementation
+
+
+//------------------------------------------------------------------------------
+// コンストラクタ
+//------------------------------------------------------------------------------
+constructor TConfigData.Create( fn : string );
+begin
+//    inherited;
+
+	FFileName := fn;
+
+    // データ初期化
+    Initial;
+
+    if fn <> '' then begin
+        SystemLoad( fn );
+        UserLoad( fn );
+    end;
+
+end;
+
+//-----------------------------------------------------------------------------
+//  コピー
+//-----------------------------------------------------------------------------
+procedure TConfigData.CopySystem( src : TConfigData );
+begin
+
+//== SYSTEM ===================================================================
+
+    AppTitle        := src.AppTitle;
+    DbPath          := src.DbPath;
+
+//== USER =====================================================================
+
+    // ※ USER は不要
+
+end;
+
+//-----------------------------------------------------------------------------
+//  コピー
+//-----------------------------------------------------------------------------
+function TConfigData.CompareSystem( src : TConfigData ) : Boolean;
+begin
+    Result := False;
+
+//-- 開発者用 -----------------------------------------------------------------
+
+    if AppTitle <> src.AppTitle     then Exit;
+    if DbPath  <> src.DbPath        then Exit;
+
+    Result := True;
+end;
+
+//------------------------------------------------------------------------------
+//  デストラクタ
+//------------------------------------------------------------------------------
+destructor TConfigData.Destroy;
+begin
+    ;
+end;
+
+//------------------------------------------------------------------------------
+//  データ初期化
+//------------------------------------------------------------------------------
+procedure TConfigData.Initial;
+begin
+
+//== SYSTEM ===================================================================
+
+
+    // アプリタイトル
+    AppTitle		    := '「ルータ設定ソフト」 レイアウト解析編集治具';
+
+    //	データディレクトリ
+//    DbPath              := 'C:\Users\K2_W10\Desktop\Z440共有\APP_DATA\';
+    DbPath              := 'C:\Users\K2_W10\Desktop\Z440共有\新しいフォルダー (3)\App_Data(2)';
+
+
+//== USER =====================================================================
+
+end;
+
+//------------------------------------------------------------------------------
+//  SYSTEM読み込み
+//------------------------------------------------------------------------------
+procedure TConfigData.SystemLoad( fn : string );
+var
+	iniFile: TIniFile;
+
+begin
+
+    if fn = '' then Exit;
+
+	iniFile := TIniFile.Create(fn);
+
+	with iniFile do begin
+
+        // アプリタイトル
+        AppTitle        := ReadString( 	'SYSTEM',		'AppTitle',        		AppTitle );
+
+        //	データディレクトリ
+        DbPath          := ReadString( 	'SYSTEM',		'DbPath',        		DbPath );
+
+    end;
+
+	iniFile.Free;
+end;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+procedure TConfigData.Save( fn : string );
+begin
+    if fn <> '' then
+	    FFileName := fn;
+
+	SystemSave;
+	UserSave;
+end;
+
+//------------------------------------------------------------------------------
+//  SYSTEM 保存
+//------------------------------------------------------------------------------
+procedure TConfigData.SystemSave;
+var
+	iniFile: TIniFile;
+
+begin
+    if FFileName = '' then Exit;
+
+	iniFile := TIniFile.Create( FFileName );
+
+    try
+
+        with iniFile do begin
+
+            // アプリタイトル
+            WriteString( 	'SYSTEM',	'AppTitle',        		AppTitle );
+
+            //	データディレクトリ
+            WriteString( 	'SYSTEM',   'DbPath',        		DbPath );
+
+        end;
+
+    except
+        ;
+    end;
+
+	iniFile.Free;
+end;
+
+//------------------------------------------------------------------------------
+//  INIファイル読み込み
+//------------------------------------------------------------------------------
+procedure TConfigData.UserLoad( fn : string );
+var
+	iniFile: TIniFile;
+
+begin
+
+	iniFile := TIniFile.Create(fn);
+
+	with iniFile do begin
+
+    end;
+
+	iniFile.Free;
+end;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+function ToHexStr( val : integer ) : string;
+begin
+    Result := Format( '$%.8X', [val] );
+end;
+
+//------------------------------------------------------------------------------
+//  USER 保存
+//------------------------------------------------------------------------------
+procedure TConfigData.UserSave;
+var
+	iniFile: TIniFile;
+
+begin
+    if FFileName = '' then Exit;
+
+	iniFile := TIniFile.Create( FFileName );
+
+    try
+
+        with iniFile do begin
+
+        end;
+
+    except
+        ;
+    end;
+
+	iniFile.Free;
+end;
+
+
+end.
+

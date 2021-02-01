@@ -1,0 +1,411 @@
+unit MainUnit;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.ImageList, Vcl.ImgList,
+  Vcl.ComCtrls, Vcl.ToolWin,
+//
+    ScreenDbUnit, ConfigDataUnit, CommonUnit;
+
+
+const
+    MAX_TYPE        = 4;
+    MAX_CATEGORY    = 10;
+    MAX_GROUP       = 10;
+    MAX_BUTTON      = 50;
+
+
+
+type
+  TMainForm = class(TForm)
+    ToolBar2: TToolBar;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    ToolButton4: TToolButton;
+    ToolButton12: TToolButton;
+    CategoryButton: TToolButton;
+    ToolButton14: TToolButton;
+    ImageList1: TImageList;
+    GroupButton: TToolButton;
+    ListButton: TToolButton;
+    ToolButton6: TToolButton;
+    LayoutButton: TToolButton;
+    procedure FormShow(Sender: TObject);
+    procedure CategoryButtonClick(Sender: TObject);
+    procedure ToolButton2Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private 宣言 }
+
+    FConfigData         : TConfigData;
+    FScreenList         : TScreenList;
+    FProgramList        : TProgramDb;
+
+    procedure   LoadDatabase;
+
+
+  public
+    { Public 宣言 }
+
+    FLayoutButton       : array [0..MAX_TYPE-1, 0..MAX_CATEGORY-1, 0..MAX_GROUP, 0..1{S/D} ] of TLayoutData;
+
+    FLayoutData         : array [0..MAX_TYPE-1] of TLayoutData;
+
+    property    ProgramList : TProgramDb      read FProgramList     write FProgramList;
+
+
+
+  const
+    typXPT     = 0;     // クロスポイント用データタイプ
+    typPanel   = 1;     // パネル用データタイプ
+
+    typDst     = 0;
+    typSrc     = 1;
+
+  end;
+
+var
+  MainForm: TMainForm;
+
+implementation
+
+{$R *.dfm}
+
+uses GroupCategoryUnit, GroupUnit, ListUnit, XPTLayoutUnit, MessageUnit;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TMainForm.FormCreate(Sender: TObject);
+var
+    i, j, k, m : integer;
+    fn : string;
+
+begin
+
+    fn := ChangeFileExt( Application.ExeName, '.ini' );
+    FConfigData := TConfigData.Create( fn );
+
+    // レイアウト用ボタン初期化
+    for i:=0 to HIGH( FLayoutButton ) do
+        for j:=0 to HIGH( FLayoutButton[i] ) do
+            for k:=0 to HIGH( FLayoutButton[i,j] ) do
+                for m:=0 to HIGH( FLayoutButton[i,j,k] ) do
+                    FLayoutButton[ i, j, k, m ] := TLayoutData.Create;
+
+
+    for i:=0 to HIGH( FLayoutData ) do
+        FLayoutData[i]  := TLayoutData.Create;
+
+    // リスト作成
+    FScreenList     := TScreenList.Create;
+    FProgramList    := TProgramDb.Create;
+
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TMainForm.CategoryButtonClick(Sender: TObject);
+begin
+    GroupCategoryForm.Visible   := (TToolButton( Sender ).Tag = 0);
+    GroupForm.Visible           := (TToolButton( Sender ).Tag = 1);
+    ListForm.Visible            := (TToolButton( Sender ).Tag = 2);
+    XPTLayoutForm.Visible          := (TToolButton( Sender ).Tag = 3);
+
+    CategoryButton.Down         := GroupCategoryForm.Visible;
+    GroupButton.Down            := GroupForm.Visible;
+    ListButton.Down             := ListForm.Visible;
+    LayoutButton.Down           := ListForm.Visible;
+
+
+    case TToolButton( Sender ).Tag of
+    0:  GroupCategoryForm.DispCategory;
+    1:  GroupForm.DispXPTGroup( 0 );
+    2:  ;
+    3:  XPTLayoutForm.DispLayout;
+    end;
+
+end;
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TMainForm.FormShow(Sender: TObject);
+const
+    tbld : array [0..5] of integer = ( 12058, 12096, 12033, 12075, 14007, 14023  );
+    tbls : array [0..5] of integer = ( 12065, 12107, 12040, 12080, 14015, 14023 );
+
+
+
+
+var
+    uf, uf2, uf3 : TUiFrame;
+    lst, lst2, lst3 : TScreenList;
+    i, j, k : integer;
+    lay2, lay3 : TLayoutData;
+    sb : TUiScreenSelectButton;
+
+    lb, ch, ch3 : TLayoutButton;
+    ld, ld3 : TLayoutData;
+
+begin
+    GroupCategoryForm           := TGroupCategoryForm.Create( Self );
+    GroupCategoryForm.Parent    := Self;
+    GroupCategoryForm.Align     := alClient;
+    GroupCategoryForm.Visible   := True;
+    GroupCategoryForm.Show;
+
+    GroupForm           := TGroupForm.Create( Self );
+    GroupForm.Parent    := Self;
+    GroupForm.Align     := alClient;
+    GroupForm.Visible   := False;
+//    GroupForm.Show;
+
+    ListForm            := TListForm.Create( Self );
+    ListForm.Parent     := Self;
+    ListForm.Align      := alClient;
+    ListForm.Visible    := False;
+//    ListForm.Show;
+
+    XPTLayoutForm            := TXPTLayoutForm.Create( Self );
+    XPTLayoutForm.Parent     := Self;
+    XPTLayoutForm.Align      := alClient;
+    XPTLayoutForm.Visible    := False;
+
+    // DB読み込み
+    LoadDatabase;
+
+(*
+    // カテゴリテーブル作成
+    for i:=0 to MAX_GROUP-1 do begin
+
+        uf := TUiFrame( FScreenList.SearchByName( UiFrame_No, Format( 'XptDst.SGp%d', [i+1] ) ) );
+
+        if nil <> uf then begin
+
+            lst := TScreenList.Create;
+
+            FScreenList.SearchSource( UiDstButton_No, IntToStr( uf.F_Id ), lst );
+
+            FLayoutButton[ typXpt, 0, i, typDst ].Frame     := uf;
+            FLayoutButton[ typXpt, 0, i, typDst ].List      := lst;
+        end;
+
+    end;
+*)
+
+    // カテゴリ
+//    uf := TUiFrame( FScreenList.SearchByName( UiFrame_No, 'XptDst.Root' ) );
+    uf := TUiFrame( FScreenList.Search( UiFrame_No, 11802 ) );
+
+    if nil <> uf then begin
+
+        lst := TScreenList.Create;
+
+        FScreenList.SearchSource( UiScreenSelectButton_No, IntToStr( uf.F_Id ), lst );
+
+        // カテゴリのパネル
+        FLayoutData[ typXpt ].Frame     := uf;
+
+        // カテゴリのボタン
+        for i:=0 to lst.Count-1 do begin
+            lb := TLayoutButton.Create;
+            lb.FButton  := lst.Data[i];
+            FLayoutData[ typXpt ].List.Add( lb );
+
+//-- DEST ---------------------------------------------------------------------
+            // グループのパネル
+            uf2 := TUiFrame( FScreenList.Search( UiFrame_No, tbld[i] ) );
+
+            // グループのボタン
+            lst2 := TScreenList.Create;
+            FScreenList.SearchSource( UiScreenSelectButton_No, IntToStr( uf2.F_Id ), lst2 );
+
+            ld := TLayoutData.Create;
+            ld.Frame    := uf2;
+
+            // グループのボタン
+            for j:=0 to lst2.count-1 do begin
+                ch          := TLayoutButton.Create;
+                ch.FButton  := lst2.Data[j];
+                ld.List.Add( ch );
+
+                // DST/SRC フレーム
+                uf3 := TUiFrame( FScreenList.SearchByName( UiFrame_No, TUiScreenSelectButton(ch.FButton).F_FrameName ) );
+
+                if uf3 <> nil then begin
+
+                    lst3 := TScreenList.Create;
+                    FScreenList.SearchSource( UiDstButton_No, IntToStr( uf3.F_Id ), lst3 );
+
+                    ld3 := TLayoutData.Create;
+                    ld3.Frame    := uf3;
+
+                    // グループのボタン
+                    for k:=0 to lst3.count-1 do begin
+                        ch3          := TLayoutButton.Create;
+                        ch3.FButton  := lst3.Data[k];
+                        ld3.List.Add( ch3 );
+
+                    end;
+
+                    ch.Child[0] := ld3;
+                end;
+
+            end;
+
+            lb.Child[0] := ld;
+
+//-- SOURCE -------------------------------------------------------------------
+
+            // グループのパネル
+            uf2 := TUiFrame( FScreenList.Search( UiFrame_No, tbls[i] ) );
+
+            // グループのボタン
+            lst2 := TScreenList.Create;
+            FScreenList.SearchSource( UiScreenSelectButton_No, IntToStr( uf2.F_Id ), lst2 );
+
+            ld := TLayoutData.Create;
+            ld.Frame    := uf2;
+
+            // グループのボタン
+            for j:=0 to lst2.count-1 do begin
+                ch          := TLayoutButton.Create;
+                ch.FButton  := lst2.Data[j];
+                ld.List.Add( ch );
+
+                // DST/SRC フレーム
+                uf3 := TUiFrame( FScreenList.SearchByName( UiFrame_No, TUiScreenSelectButton(ch.FButton).F_FrameName ) );
+
+                if uf3 <> nil then begin
+
+                    lst3 := TScreenList.Create;
+                    FScreenList.SearchSource( UiSrcButton_No, IntToStr( uf3.F_Id ), lst3 );
+
+                    ld3 := TLayoutData.Create;
+                    ld3.Frame    := uf3;
+
+                    // グループのボタン
+                    for k:=0 to lst3.count-1 do begin
+                        ch3          := TLayoutButton.Create;
+                        ch3.FButton  := lst3.Data[k];
+                        ld3.List.Add( ch3 );
+                    end;
+
+                    ch.Child[1] := ld3;
+                end;
+
+            end;
+
+            lb.Child[1] := ld;
+
+        end;
+
+    end
+
+end;
+
+const
+    SCREEN_FILE         = 'ScreenDb.xml';
+    DISPLAY_FILE        = 'DisplayDb.xml';
+    DEVICESETTING_FILE  = 'DeviceSettingDb.xml';
+
+    PROGRAM0_FILE       = 'PgmDbKeyDb\' + 'PRG_11.xml';
+    PRG_INDEX_FILE      = 'PgmDbKeyDb\' + 'ProgramIndexDb.xml';
+
+    SBUS_FILE           = 'SbusDb.xml';
+    ACCOUNT_FILE        = 'AccountDb.xml';
+
+    FDBPath             = 'C:\Users\K2_W10\Desktop\Z440共有\APP_DATA';
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+procedure TMainForm.LoadDatabase;
+var
+    fn : string;
+
+begin
+
+//    SaveEdit.Text := FConfigData.DbPath;
+
+    // 読込みファイル
+    fn := FConfigData.DbPath + SCREEN_FILE;
+
+    if False = FileExists( fn ) then begin
+
+        WarningMessage( 'データベースファイルが見つかりません。' )
+
+    end
+    else begin
+
+        MessageForm.Start( 'データベース読み込み中...' );
+
+        // 保存先
+//        ed := fn;   //ChangeFileExt( fn, '.bak' );
+
+        MessageForm.SubMessage  := 'ScreenDb';
+
+        // SCREEN ファイル読み込み
+        FScreenList.ScreenDbLoad( fn );
+
+
+(*
+        MessageForm.SubMessage  := 'DisplayDb';
+
+        // DISPLAY ファイル読み込み
+        fn := FConfigData.DbPath + DISPLAY_FILE;
+        FDisplayList.Load( fn );
+
+        // ソース読み込み（HD）
+        fn := FConfigData.DbPath + DEVICESETTING_FILE;
+        FXPTSourceList.Load( fn );
+*)
+
+        MessageForm.SubMessage  := 'ProgramDb';
+
+        // PRG0読込み
+        fn := FConfigData.DbPath + PROGRAM0_FILE;
+        if True = FileExists( fn ) then
+            FProgramDb.Load( fn );
+
+(*
+        MessageForm.SubMessage  := 'ProgramIndexDb';
+
+        // PROGRAM INDEX
+        fn := FConfigData.DbPath + PRG_INDEX_FILE;
+        if True = FileExists( fn ) then
+            FProgramIndexDb.Load( fn );
+
+        MessageForm.SubMessage  := 'SBusDb';
+
+        // S-BUS読込み
+        fn := FConfigData.DbPath + SBUS_FILE;
+        FSBusDb.Load( fn );
+
+        MessageForm.SubMessage  := 'AccountDb';
+
+        // S-BUS読込み
+        fn := FConfigData.DbPath + ACCOUNT_FILE;
+        FAccountDb.Load( fn );
+
+        // ルートパネル作成
+        MakeRootPanel;
+
+        // 先頭フレームを選択状態にする
+        PostMessage( handle, WM_FRAME_ACTIVE, 0, 0 );
+ *)
+
+        MessageForm.Close;
+    end;
+end;
+
+
+procedure TMainForm.ToolButton2Click(Sender: TObject);
+begin
+    Close;
+end;
+
+
+
+
+end.
